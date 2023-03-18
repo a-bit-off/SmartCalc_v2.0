@@ -159,12 +159,11 @@ void Model::PolishNotation(bool flag) {
 
     Node *current_oper = operationsStack_.End().operator-(1).base();
     if (PolishNotationHelper(down_oper, current_oper, flag)) {
+      std::map<std::string, int> op = current_oper->operation_;
       operationsStack_.PopBack();
       if (!operationsStack_.Empty() && !flag) {
-        operationsStack_.End().operator-(1).base()->operation_ =
-            current_oper->operation_;
-        operationsStack_.End().operator-(1).base()->value_ =
-            current_oper->value_;
+        operationsStack_.PopBack();
+        operationsStack_.PushBack(op);
       }
     }
   }
@@ -272,6 +271,16 @@ std::string Model::FindOperation(std::string str) {
 
 #ifdef QT_MACRO
 void Model::Concat(QLineEdit *lineEdit, const QString &src) {
+  if (!lineEdit->text().isEmpty()) {
+    char c = lineEdit->text().toStdString().back();
+    string oper;
+    oper.append({c});
+    if (src == "+" || src == "-") {
+      if (worksWithUnary_.find(string(oper)) != worksWithUnary_.end()) {
+        lineEdit->setText(lineEdit->text() + "(");
+      }
+    }
+  }
   lineEdit->setText(lineEdit->text() + src);
 }
 #endif
