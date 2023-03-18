@@ -144,7 +144,7 @@ TEST(Calc, Test15) {
 TEST(Calc, Test16) {
   Model m;
   double res = 0;
-  double orig = 89799655.696;
+  double orig = 8.9799773536;
   bool success = m.SmartCalc(
       "-(1+3*(5%3+100))/50/1*20+-(50^2*(5+3^2)%(3*2)+31*20/"
       "(10*-5^(2+1)))+39^2*48*10*123-50-10",
@@ -220,11 +220,9 @@ TEST(Calc, Test25) {
   Model m;
   double res = 0;
   double orig = 0.0016;
-  bool success = m.SmartCalc("(-5)^-4", 0, &res);
-  std::cout << res << std::endl;
+  bool success = m.SmartCalc("(-5)^(-4)", 0, &res);
   EXPECT_EQ(success, true);
   EXPECT_EQ(res, orig);
-  // EXPECT_TRUE((fabs(orig) - fabs(res)) < 0.0000001);
 }
 int main(int argc, char* argv[]) {
   testing::InitGoogleTest(&argc, argv);

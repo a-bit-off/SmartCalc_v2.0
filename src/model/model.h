@@ -16,9 +16,16 @@
 
 using namespace std;
 namespace s21 {
+const std::vector<string> p_m_oper{"+", "-"};
+const std::vector<string> other_oper{"*", "/", "^", "%"};
+const std::vector<string> oper{"+", "-", "*", "/", "^", "%"};
+const std::vector<string> func{"sin",  "cos", "tan", "asin", "acos",
+                               "atan", "ln",  "log", "sqrt"};
+const std::vector<string> left_scobe{"("};
+const std::vector<string> right_scobe{")"};
 const std::map<std::string, int> priorityTable_ = {
     {"num", -2}, {"(", -1},   {")", -1},   {"+", 1},    {"-", 1},   {"*", 2},
-    {"/", 2},    {"^", 3},    {"mod", 3},  {"sin", 4},  {"cos", 4}, {"tan", 4},
+    {"/", 2},    {"^", 3},    {"%", 3},    {"sin", 4},  {"cos", 4}, {"tan", 4},
     {"asin", 4}, {"acos", 4}, {"atan", 4}, {"sqrt", 4}, {"ln", 4},  {"log", 4}};
 const std::map<std::string, int> singNumOperations_ = {
     {"sin", 4},  {"cos", 4},  {"tan", 4}, {"asin", 4}, {"acos", 4},
@@ -67,6 +74,8 @@ class Model : Stack {
   bool PolishNotationHelper(Node *down_oper, Node *current_oper, bool flag);
   void ExecutionOperations(double num1, double num2, Node *down_oper);
 
+  bool Validator(std::string str, int i);
+  bool Contains(std::vector<string> vec, std::string oper);
   size_t SkipValue(std::string str);
   std::string FindOperation(std::string str);
 };

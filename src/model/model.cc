@@ -1,5 +1,7 @@
 #include "model.h"
 
+#include <list>
+
 using namespace s21;
 // Stack
 void Stack::PushBack(const double value) {
@@ -38,11 +40,21 @@ bool Model::SmartCalc(std::string str, double x, double *res) {
     } else {
       std::string operation = FindOperation(strStep);
       if (operation.size() > 0) {
-        if (operation != "(" && operation != ")") {
+        if (operation == "(" || operation == ")") {
+          oper = 0;
+        } else {
           oper += 1;
-          if (!operationsStack_.Empty() &&
-              operationsStack_.Top().operation_.begin()->first == "(") {
-            oper = 0;
+        }
+        // if (!operationsStack_.Empty() &&
+        //     operationsStack_.Top().operation_.begin()->first == "(") {
+        // }
+        if (oper > 1) {
+          if (oper > 2) {
+            success = false;
+            break;
+          } else if (Validator(str, i) == false) {
+            success = false;
+            break;
           }
         }
         if (unary && (operation == "+" || operation == "-")) {
@@ -53,10 +65,6 @@ bool Model::SmartCalc(std::string str, double x, double *res) {
         if (worksWithUnary_.find(operation) != worksWithUnary_.end()) {
           unary = true;
         }
-        if (oper > 1) {
-          success = false;
-          break;
-        }
       } else if (strStep[0] == ' ') {
         oper = 0;
         i++;
@@ -65,7 +73,6 @@ bool Model::SmartCalc(std::string str, double x, double *res) {
         break;
       }
     }
-
     strStep = (str.begin() + i).base();
     try {
       PolishNotationManager(strStep);
@@ -73,6 +80,8 @@ bool Model::SmartCalc(std::string str, double x, double *res) {
       success = false;
     }
   }
+  // cycle end
+
   if (!operationsStack_.Empty()) {
     success = false;
   }
@@ -218,7 +227,7 @@ void Model::ExecutionOperations(double num1, double num2, Node *down_oper) {
     valuesStack_.End().operator-(1).base()->value_ = num1 * num2;
   } else if (down_oper->operation_.begin()->first == "^") {
     valuesStack_.End().operator-(1).base()->value_ = pow(num1, num2);
-  } else if (down_oper->operation_.begin()->first == "mod") {
+  } else if (down_oper->operation_.begin()->first == "%") {
     valuesStack_.End().operator-(1).base()->value_ = fmod(num1, num2);
   } else if (down_oper->operation_.begin()->first == "cos") {
     valuesStack_.End().operator-(1).base()->value_ = cos(num2);
@@ -242,6 +251,69 @@ void Model::ExecutionOperations(double num1, double num2, Node *down_oper) {
 }
 
 // Helpers
+bool Model::Validator(std::string str, int i) {
+  string prev_oper;
+  string curr_oper;
+
+  bool start = false;
+  if (!str.empty()) {
+    prev_oper = FindOperation(&str[0]);
+    curr_oper = FindOperation(&str[prev_oper.size()]);
+    if (!prev_oper.empty() && !curr_oper.empty()) {
+      if ((Contains(p_m_oper, prev_oper) && Contains(left_scobe, curr_oper)) ||
+          (Contains(p_m_oper, prev_oper) && Contains(func, curr_oper)) ||
+          (Contains(left_scobe, prev_oper) && Contains(func, curr_oper)) ||
+          (Contains(func, prev_oper) && Contains(left_scobe, curr_oper)) ||
+          (Contains(left_scobe, prev_oper) &&
+           Contains(left_scobe, curr_oper)) ||
+          (Contains(left_scobe, prev_oper) && Contains(p_m_oper, curr_oper))) {
+        start = true;
+      }
+    } else if (!prev_oper.empty() && curr_oper.empty()) {
+      if (Contains(p_m_oper, prev_oper) || Contains(left_scobe, prev_oper)) {
+        start = true;
+      }
+    } else if (prev_oper.empty()) {
+      start = true;
+    }
+  }
+
+  bool mid = true;
+  if (!str.empty()) {
+    curr_oper = FindOperation(&str[i]);
+    prev_oper = FindOperation(&str[i - 1]);
+    if (!curr_oper.empty() && !prev_oper.empty()) {
+      if ((Contains(oper, prev_oper) && Contains(right_scobe, curr_oper)) ||
+          (Contains(left_scobe, prev_oper) &&
+           Contains(other_oper, curr_oper)) ||
+          (Contains(other_oper, prev_oper) &&
+           Contains(other_oper, curr_oper)) ||
+          (Contains(p_m_oper, prev_oper) && Contains(other_oper, curr_oper)) ||
+          (Contains(right_scobe, prev_oper) &&
+           Contains(left_scobe, curr_oper))) {
+        mid = false;
+      }
+    }
+  }
+
+  bool end = true;
+  curr_oper = FindOperation(&str[str.size() - 1]);
+  if (!curr_oper.empty()) {
+    if (!Contains(right_scobe, curr_oper)) {
+      end = false;
+    }
+  }
+
+  return (start && mid && end) ? true : false;
+}
+bool Model::Contains(std::vector<string> vec, std::string oper) {
+  for (size_t i = 0; i < vec.size(); i++) {
+    if (vec.at(i) == oper) {
+      return true;
+    }
+  }
+  return false;
+}
 size_t Model::SkipValue(std::string str) {
   bool dot = false;
   size_t step = 0;

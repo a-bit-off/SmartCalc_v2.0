@@ -2,7 +2,7 @@
 using namespace std;
 int main() {
   Model m;
-  string str = "9**9";
+  string str = "-2+-3";
   double x = 0;
   double res = 0;
   bool success = false;
@@ -13,4 +13,3 @@ int main() {
   cout << "orig = 0.0016" << endl;
   return 0;
 }
-// -fsanitize=address -O1 -fno-omit-frame-pointer
