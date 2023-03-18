@@ -53,8 +53,9 @@ bool Model::SmartCalc(std::string str, double x, double *res) {
         if (worksWithUnary_.find(operation) != worksWithUnary_.end()) {
           unary = true;
         }
-        if (oper > 2) {
+        if (oper > 1) {
           success = false;
+          break;
         }
       } else if (strStep[0] == ' ') {
         oper = 0;
