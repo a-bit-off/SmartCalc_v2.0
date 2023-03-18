@@ -56,9 +56,12 @@ bool Model::SmartCalc(std::string str, double x, double *res) {
         if (oper > 2) {
           success = false;
         }
-      } else {
+      } else if (strStep[0] == ' ') {
         oper = 0;
         i++;
+      } else {
+        success = false;
+        break;
       }
     }
 
@@ -72,7 +75,9 @@ bool Model::SmartCalc(std::string str, double x, double *res) {
   if (!operationsStack_.Empty()) {
     success = false;
   }
-  *res = valuesStack_.Top().value_;
+  if (success) {
+    *res = valuesStack_.Top().value_;
+  }
   return success;
 }
 void Model::PolishNotationManager(std::string str) {

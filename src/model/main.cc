@@ -2,7 +2,7 @@
 using namespace std;
 int main() {
   Model m;
-  string str = "9+-3";
+  string str = "hui";
   double x = 0;
   double res = 0;
   bool success = false;
