@@ -4,6 +4,7 @@
 #include <QString>
 
 #include "../model/model.h"
+#include "QLineEdit"
 #include "qlistview.h"
 
 namespace s21 {
@@ -11,7 +12,7 @@ namespace s21 {
 class Controller {
  public:
   bool Calculate(QString str, double x, double *res);
-  void Concat(QLineEdit *lineEdit, const QString &src);
+  void Concat(QLineEdit *lineEdit, const QString src);
 
  private:
   Model model;

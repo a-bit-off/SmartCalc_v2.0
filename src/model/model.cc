@@ -374,18 +374,16 @@ void Model::Clear() {
   valuesStack_.Clear();
   operationsStack_.Clear();
 }
-#ifdef QT_MACRO
-void Model::Concat(QLineEdit *lineEdit, const QString &src) {
-  if (!lineEdit->text().isEmpty()) {
-    char c = lineEdit->text().toStdString().back();
+void Model::Concat(std::string *lineEdit, const std::string src) {
+  if (!lineEdit->empty()) {
+    char c = lineEdit->back();
     string oper;
     oper.append({c});
     if (src == "+" || src == "-") {
       if (worksWithUnary_.find(string(oper)) != worksWithUnary_.end()) {
-        lineEdit->setText(lineEdit->text() + "(");
+        lineEdit->append("(");
       }
     }
   }
-  lineEdit->setText(lineEdit->text() + src);
+  lineEdit->append(src);
 }
-#endif

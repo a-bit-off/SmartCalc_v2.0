@@ -1,13 +1,6 @@
 #ifndef MODEL_H
 #define MODEL_H
 
-#ifdef QT_MACRO
-#include "QtWidgets/qlineedit.h"
-#include "qlistview.h"
-#include "qstandarditemmodel.h"
-#endif
-
-#include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <map>
@@ -43,6 +36,9 @@ class Stack {
   };
 
  public:
+  Stack() {}
+  ~Stack() {}
+
   void PushBack(const double value);
   void PushBack(const std::map<std::string, int> type);
   void PopBack();
@@ -59,10 +55,10 @@ class Stack {
 
 class Model : Stack {
  public:
+  Model() {}
+  ~Model() {}
   bool SmartCalc(std::string str, double x, double *res);
-#ifdef QT_MACRO
-  void Concat(QLineEdit *lineEdit, const QString &src);
-#endif
+  void Concat(std::string *lineEdit, const std::string src);
 
  private:
   Stack valuesStack_;
