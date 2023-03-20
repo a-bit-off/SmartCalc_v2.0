@@ -37,7 +37,8 @@ gcov_report: clean
 
 .PHONY: dist
 dist:
-	@tar -cf calc.tar *.cc *.h Makefile build
+	zip -r my_arch.zip *
+	# @tar -cf calc.tar *.cc *.h Makefile build
 
 .PHONY: dvi
 dvi:
