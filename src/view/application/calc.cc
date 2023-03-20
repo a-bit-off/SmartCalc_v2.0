@@ -109,8 +109,19 @@ void Calc::drawGraph() {
   double res = 0;
   double dotFrequency = 1.0;
   if (ui->xBeginLine->text().isEmpty()) {
-    controller.Concat(ui->xBeginLine, ".");
+    controller.Concat(ui->xBeginLine, "-100");
   }
+  if (ui->xEndLine->text().isEmpty()) {
+    controller.Concat(ui->xEndLine, "100");
+  }
+
+  if (ui->yBeginLine->text().isEmpty()) {
+    controller.Concat(ui->yBeginLine, "-100");
+  }
+  if (ui->yEndLine->text().isEmpty()) {
+    controller.Concat(ui->yEndLine, "100");
+  }
+
   if (ui->xBeginLine->text().toDouble() <= 1000 &&
       ui->xEndLine->text().toDouble() <= 1000) {
     dotFrequency = 0.1;

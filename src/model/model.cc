@@ -301,14 +301,20 @@ bool Model::Validator(std::string str, int i) {
       }
     }
   }
+
   if (!str.empty()) {
     for (size_t j = 0; j < str.size(); j++) {
       prev_oper = FindOperation(&str[j]);
-      curr_oper = FindOperation(&str[prev_oper.size()]);
+      if ((j + prev_oper.size()) < str.size()) {
+        curr_oper = FindOperation(&str[j + prev_oper.size()]);
+      } else {
+        break;
+      }
       if (!curr_oper.empty() && !prev_oper.empty()) {
         if (Contains(left_scobe, prev_oper) &&
             Contains(right_scobe, curr_oper)) {
           mid = false;
+          break;
         }
       }
     }
