@@ -1,11 +1,16 @@
 #include "calc.h"
 
 #include "./ui_calc.h"
-
 using namespace s21;
 
 Calc::Calc(QWidget *parent) : QWidget(parent), ui(new Ui::Calc) {
   ui->setupUi(this);
+
+  double n = 1000000;
+  ui->xBeginLine->setValidator(new QDoubleValidator(-n, n, 2, this));
+  ui->xEndLine->setValidator(new QDoubleValidator(-n, n, 2, this));
+  ui->yBeginLine->setValidator(new QDoubleValidator(-n, n, 2, this));
+  ui->yEndLine->setValidator(new QDoubleValidator(-n, n, 2, this));
 
   ui->widget->setInteraction(QCP::iRangeZoom, true);
   ui->widget->setInteraction(QCP::iRangeDrag, true);
@@ -103,6 +108,9 @@ void Calc::drawGraph() {
   QVector<double> x, y;
   double res = 0;
   double dotFrequency = 1.0;
+  if (ui->xBeginLine->text().isEmpty()) {
+    controller.Concat(ui->xBeginLine, ".");
+  }
   if (ui->xBeginLine->text().toDouble() <= 1000 &&
       ui->xEndLine->text().toDouble() <= 1000) {
     dotFrequency = 0.1;

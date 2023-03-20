@@ -1,15 +1,11 @@
 #include "model.cc"
-using namespace std;
+
 int main() {
   Model m;
-  string str = "-2+-3";
   double x = 0;
   double res = 0;
-  bool success = false;
-  success = m.SmartCalc(str, x, &res);
-
-  cout << "success = " << success << endl;
-  cout << "res = " << res << endl;
-  cout << "orig = 0.0016" << endl;
+  bool success = m.SmartCalc("1+sin()+1", x, &res);
+  std::cout << "success = " << success << std::endl;
+  std::cout << "res = " << res << std::endl;
   return 0;
 }

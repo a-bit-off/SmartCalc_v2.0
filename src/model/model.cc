@@ -16,77 +16,83 @@ std::vector<s21::Stack::Node>::iterator Stack::Begin() { return head_.begin(); }
 std::vector<s21::Stack::Node>::iterator Stack::End() { return head_.end(); }
 bool Stack::Empty() { return head_.empty(); }
 int Stack::Size() { return head_.size(); }
+void Stack::Clear() { head_.clear(); }
 
-// Polich notation
+// Calculation
 bool Model::SmartCalc(std::string str, double x, double *res) {
-  double value = 0;
+  int consecutive_opers = 0;
   bool unary = true;
-  int oper = 0;
   bool success = true;
   size_t i = 0;
+
   while (i < str.size() && success) {
-    std::string strStep = (str.begin() + i).base();
+    std::string str_step = (str.begin() + i).base();
     if (std::isdigit(str[i]) || str[i] == 'x' || str[i] == 'X') {
-      oper = 0;
-      unary = false;
-      if (str[i] == 'x' || str[i] == 'X') {
-        value = x;
-        i++;
-      } else {
-        value = std::atof(strStep.c_str());
-        i += SkipValue(strStep);
-      }
-      valuesStack_.PushBack(value);
+      ParsingValue(&consecutive_opers, &i, &unary, str_step, str, x);
     } else {
-      std::string operation = FindOperation(strStep);
-      if (operation.size() > 0) {
-        if (operation == "(" || operation == ")") {
-          oper = 0;
-        } else {
-          oper += 1;
-        }
-        // if (!operationsStack_.Empty() &&
-        //     operationsStack_.Top().operation_.begin()->first == "(") {
-        // }
-        if (oper > 1) {
-          if (oper > 2) {
-            success = false;
-            break;
-          } else if (Validator(str, i) == false) {
-            success = false;
-            break;
-          }
-        }
-        if (unary && (operation == "+" || operation == "-")) {
-          valuesStack_.PushBack(0);
-        }
-        operationsStack_.PushBack({{operation, priorityTable_.at(operation)}});
-        i += operation.size();
-        if (worksWithUnary_.find(operation) != worksWithUnary_.end()) {
-          unary = true;
-        }
-      } else if (strStep[0] == ' ') {
-        oper = 0;
-        i++;
-      } else {
+      if (!ParsingOperations(&consecutive_opers, &i, &unary, str_step, str)) {
         success = false;
-        break;
       }
     }
-    strStep = (str.begin() + i).base();
-    try {
-      PolishNotationManager(strStep);
-    } catch (std::out_of_range const &err) {
-      success = false;
+    str_step = (str.begin() + i).base();
+    if (success) {
+      try {
+        PolishNotationManager(str_step);
+      } catch (std::out_of_range const &err) {
+        success = false;
+      }
     }
   }
-  // cycle end
 
-  if (!operationsStack_.Empty()) {
+  if (!operationsStack_.Empty() || str.empty()) {
     success = false;
   }
-  if (success) {
-    *res = valuesStack_.Top().value_;
+  success ? *res = valuesStack_.Top().value_ : *res = 0;
+  Clear();
+  return success;
+}
+void Model::ParsingValue(int *consecutive_opers, size_t *i, bool *unary,
+                         std::string str_step, std::string str, double x) {
+  *consecutive_opers = 0;
+  *unary = false;
+  double value = 0;
+  if (str[*i] == 'x' || str[*i] == 'X') {
+    value = x;
+    *i += 1;
+  } else {
+    value = std::atof(str_step.c_str());
+    *i += SkipValue(str_step);
+  }
+  valuesStack_.PushBack(value);
+}
+bool Model::ParsingOperations(int *consecutive_opers, size_t *i, bool *unary,
+                              std::string str_step, std::string str) {
+  bool success = true;
+  std::string operation = FindOperation(str_step);
+  if (operation.size() > 0) {
+    *consecutive_opers += 1;
+    if (operation == "(" || operation == ")") {
+      *consecutive_opers = 0;
+    }
+    if (*consecutive_opers > 1) {
+      if (*consecutive_opers > 2 || Validator(str, *i) == false) {
+        success = false;
+      }
+    }
+    if (success) {
+      if (*unary && (operation == "+" || operation == "-")) {
+        valuesStack_.PushBack(0);
+      }
+      operationsStack_.PushBack({{operation, priorityTable_.at(operation)}});
+      (*i) += operation.size();
+      if (worksWithUnary_.find(operation) != worksWithUnary_.end()) {
+        *unary = true;
+      }
+    }
+  } else {
+    *consecutive_opers = 0;
+    (*i)++;
+    *unary = false;
   }
   return success;
 }
@@ -250,7 +256,7 @@ void Model::ExecutionOperations(double num1, double num2, Node *down_oper) {
   }
 }
 
-// Helpers
+// Secondary
 bool Model::Validator(std::string str, int i) {
   string prev_oper;
   string curr_oper;
@@ -279,7 +285,7 @@ bool Model::Validator(std::string str, int i) {
   }
 
   bool mid = true;
-  if (!str.empty()) {
+  if (!str.empty() && str.size() > 1 && i < int((str.size() - 1)) && i > 0) {
     curr_oper = FindOperation(&str[i]);
     prev_oper = FindOperation(&str[i - 1]);
     if (!curr_oper.empty() && !prev_oper.empty()) {
@@ -292,6 +298,18 @@ bool Model::Validator(std::string str, int i) {
           (Contains(right_scobe, prev_oper) &&
            Contains(left_scobe, curr_oper))) {
         mid = false;
+      }
+    }
+  }
+  if (!str.empty()) {
+    for (size_t j = 0; j < str.size(); j++) {
+      prev_oper = FindOperation(&str[j]);
+      curr_oper = FindOperation(&str[prev_oper.size()]);
+      if (!curr_oper.empty() && !prev_oper.empty()) {
+        if (Contains(left_scobe, prev_oper) &&
+            Contains(right_scobe, curr_oper)) {
+          mid = false;
+        }
       }
     }
   }
@@ -346,7 +364,10 @@ std::string Model::FindOperation(std::string str) {
   operation.clear();
   return operation;
 }
-
+void Model::Clear() {
+  valuesStack_.Clear();
+  operationsStack_.Clear();
+}
 #ifdef QT_MACRO
 void Model::Concat(QLineEdit *lineEdit, const QString &src) {
   if (!lineEdit->text().isEmpty()) {

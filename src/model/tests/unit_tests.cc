@@ -224,6 +224,30 @@ TEST(Calc, Test25) {
   EXPECT_EQ(success, true);
   EXPECT_EQ(res, orig);
 }
+TEST(Calc, Test26) {
+  Model m;
+  double res = 0;
+  bool success = m.SmartCalc("*5", 0, &res);
+  EXPECT_EQ(success, false);
+}
+TEST(Calc, Test27) {
+  Model m;
+  double res = 0;
+  bool success = m.SmartCalc(
+      "+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+"
+      "1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+"
+      "1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+"
+      "1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1",
+      0, &res);
+  EXPECT_EQ(success, true);
+  EXPECT_EQ(res, 130);
+}
+TEST(Calc, Test28) {
+  Model m;
+  double res = 0;
+  bool success = m.SmartCalc("9+sin()+1", 0, &res);
+  EXPECT_EQ(success, false);
+}
 int main(int argc, char* argv[]) {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

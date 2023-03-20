@@ -32,6 +32,7 @@ const std::map<std::string, int> singNumOperations_ = {
     {"atan", 4}, {"sqrt", 4}, {"ln", 4},  {"log", 4}};
 const std::map<std::string, int> worksWithUnary_ = {
     {"(", -1}, {"+", 1}, {"-", 1}, {"*", 2}, {"/", 2}, {"^", 3}};
+
 class Stack {
  protected:
   struct Node {
@@ -50,6 +51,7 @@ class Stack {
   Node Top();
   std::vector<Node>::iterator Begin();
   std::vector<Node>::iterator End();
+  void Clear();
 
  private:
   std::vector<Node> head_;
@@ -66,6 +68,10 @@ class Model : Stack {
   Stack valuesStack_;
   Stack operationsStack_;
 
+  void ParsingValue(int *consecutive_opers, size_t *i, bool *unary,
+                    std::string strStep, std::string str, double x);
+  bool ParsingOperations(int *consecutive_opers, size_t *i, bool *unary,
+                         std::string strStep, std::string str);
   void PolishNotationManager(std::string str);
   void ScobeManager(bool *scobe);
   void OperationsManager(bool scobe);
@@ -78,6 +84,7 @@ class Model : Stack {
   bool Contains(std::vector<string> vec, std::string oper);
   size_t SkipValue(std::string str);
   std::string FindOperation(std::string str);
+  void Clear();
 };
 }  // namespace s21
 #endif  // MODEL_H

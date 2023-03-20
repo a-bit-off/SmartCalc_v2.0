@@ -3,12 +3,11 @@ CXXFLAGS=-std=c++17 -Wall -Werror -Wextra -pedantic -UQT_MACRO
 GCOV=--coverage
 OUTNAME=tests
 
-.PHONY: install
-install: tests cmake build
+.PHONY: all
+all: test cmake build open
 
 .PHONY: cmake
 cmake:
-	
 	mkdir -p build && cd build && cmake ..
 
 .PHONY: build
@@ -45,5 +44,4 @@ dist:
 
 .PHONY: dvi
 dvi:
-	open ../materials/doc.tex
-	# pdflatex ../materials/doc.tex
+	open dvi.html
