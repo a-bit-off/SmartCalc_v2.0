@@ -248,6 +248,19 @@ TEST(Calc, Test28) {
   bool success = m.SmartCalc("9+sin()+1", 0, &res);
   EXPECT_EQ(success, false);
 }
+TEST(Calc, Test29) {
+  Model m;
+  double res = 0;
+  bool success = m.SmartCalc("2+7.555", 0, &res);
+  EXPECT_EQ(success, true);
+}
+TEST(Calc, Test30) {
+  Model m;
+  double res = 0;
+  bool success = m.SmartCalc("2+7.55.5", 0, &res);
+  EXPECT_EQ(success, false);
+}
+
 int main(int argc, char* argv[]) {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

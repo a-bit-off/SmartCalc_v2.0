@@ -11,6 +11,6 @@ bool Controller::Calculate(QString str, double x, double *res) {
 
 void Controller::Concat(QLineEdit *lineEdit, const QString src) {
   std::string lineE = lineEdit->text().toStdString();
-  model.Concat(&le, src.toStdString(););
+  model.Concat(&lineE, src.toStdString());
   lineEdit->setText(QString::fromStdString(lineE));
 }

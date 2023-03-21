@@ -28,7 +28,11 @@ bool Model::SmartCalc(std::string str, double x, double *res) {
   while (i < str.size() && success) {
     std::string str_step = (str.begin() + i).base();
     if (std::isdigit(str[i]) || str[i] == 'x' || str[i] == 'X') {
-      ParsingValue(&consecutive_opers, &i, &unary, str_step, str, x);
+      try {
+        ParsingValue(&consecutive_opers, &i, &unary, str_step, str, x);
+      } catch (std::out_of_range const &err) {
+        success = false;
+      }
     } else {
       if (!ParsingOperations(&consecutive_opers, &i, &unary, str_step, str)) {
         success = false;
@@ -339,21 +343,20 @@ bool Model::Contains(std::vector<string> vec, std::string oper) {
   return false;
 }
 size_t Model::SkipValue(std::string str) {
-  bool dot = false;
+  int dot = 0;
   size_t step = 0;
   for (char c : str) {
     if (isdigit(c) || c == '.') {
       if (c == '.') {
-        if (!dot) {
-          dot = true;
-        } else {
-          break;
-        }
+        dot++;
       }
     } else {
       break;
     }
     step++;
+  }
+  if (dot > 1) {
+    throw std::out_of_range("Error calculation!");
   }
   return step;
 }
@@ -383,6 +386,12 @@ void Model::Concat(std::string *lineEdit, const std::string src) {
       if (worksWithUnary_.find(string(oper)) != worksWithUnary_.end()) {
         lineEdit->append("(");
       }
+    }
+  }
+  if (src == ".") {
+    if (lineEdit->empty() ||
+        (!lineEdit->empty() && !isdigit(lineEdit->back()))) {
+      return;
     }
   }
   lineEdit->append(src);
