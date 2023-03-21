@@ -14,6 +14,7 @@ Calc::Calc(QWidget *parent) : QWidget(parent), ui(new Ui::Calc) {
 
   ui->widget->setInteraction(QCP::iRangeZoom, true);
   ui->widget->setInteraction(QCP::iRangeDrag, true);
+  this->setFixedSize(1039, 383);
 }
 
 Calc::~Calc() { delete ui; }
